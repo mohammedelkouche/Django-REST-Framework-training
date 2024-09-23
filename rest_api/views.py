@@ -23,7 +23,6 @@ def PostsView(request):
             serialazer.save()
             return Response(serialazer.data, status=status.HTTP_201_CREATED)
         return Response(serialazer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
 
 #pk : primary kay 
 # we can pass id instead of pk
