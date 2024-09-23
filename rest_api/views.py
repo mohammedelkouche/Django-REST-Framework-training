@@ -6,53 +6,96 @@ from rest_framework.response import Response
 from rest_framework import status
 
 #class-based Views
-#------ APIView class for working with class-based views -------
 from rest_framework.views import APIView
 from django.http import Http404
 
+# using mixins and generic class-based views
+from rest_framework import generics
+from rest_framework import mixins
+
+
 # Create your views here.
 
-class   PostsAPIViews(APIView):
-    def get(self, request):
-        posts = Post.objects.all() #querySet
-        serialazer = PostSerializer(posts, many=True)
-        return Response(serialazer.data)
 
-    def post(self, request):
-        serialazer = PostSerializer(data = request.data)
+#------ using mixins and generic class-based views -------
+
+
+class   genericApiView(generics.GenericAPIView,  mixins.ListModelMixin, mixins.CreateModelMixin,
+                       mixins.UpdateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin):
+    serializer_class = PostSerializer
+    queryset = Post.objects.all()
+    lookup_field = 'id'
+
+    # def get(self, request, id):
+    def get(self, request, id=None):
+        if id:
+            return self.retrieve(request)
+        else:
+            return self.list(request)
         
-        if serialazer.is_valid():
-            serialazer.save()
-            return Response(serialazer.data, status=status.HTTP_201_CREATED)
-        return Response(serialazer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # if id is None:
+        #     # List all posts if no `id` is provided
+        #     return self.list(request)
+        # else:
+        #     # Retrieve a specific post if `id` is provided
+        #     return self.retrieve(request, id=id)
+    
+    def post(self, request):
+        return self.create(request)
+    
+    def put(self, request, id=None):
+        return self.update(request. id)
+    
+    def delete(self, request, id=None):
+        return self.destroy(request, id)
+
+
+
+
+#------ APIView class for working with class-based views -------
+
+
+# class   PostsAPIViews(APIView):
+#     def get(self, request):
+#         posts = Post.objects.all() #querySet
+#         serialazer = PostSerializer(posts, many=True)
+#         return Response(serialazer.data)
+
+#     def post(self, request):
+#         serialazer = PostSerializer(data = request.data)
+        
+#         if serialazer.is_valid():
+#             serialazer.save()
+#             return Response(serialazer.data, status=status.HTTP_201_CREATED)
+#         return Response(serialazer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
-class posts_detailsAPIViews(APIView):
-    def get_object(self, pk):
-        try:
-            return Post.objects.get(pk=pk)
-        except Post.DoesNotExist:
-            raise Http404
+# class posts_detailsAPIViews(APIView):
+#     def get_object(self, pk):
+#         try:
+#             return Post.objects.get(pk=pk)
+#         except Post.DoesNotExist:
+#             raise Http404
         
-    def get(self, request, pk):
-        post = self.get_object(pk)
-        serializer = PostSerializer(post)
-        return Response(serializer.data)
+#     def get(self, request, pk):
+#         post = self.get_object(pk)
+#         serializer = PostSerializer(post)
+#         return Response(serializer.data)
 
-    def put(self, request, pk):
-        post = self.get_object(pk)
-        serializer = PostSerializer(post, data=request.data)
+#     def put(self, request, pk):
+#         post = self.get_object(pk)
+#         serializer = PostSerializer(post, data=request.data)
 
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-    def delete(self, request, pk):
-        post = self.get_object(pk)
-        post.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+#     def delete(self, request, pk):
+#         post = self.get_object(pk)
+#         post.delete()
+#         return Response(status=status.HTTP_204_NO_CONTENT)
         
 
 
