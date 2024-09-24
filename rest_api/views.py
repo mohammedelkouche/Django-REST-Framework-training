@@ -13,41 +13,68 @@ from django.http import Http404
 from rest_framework import generics
 from rest_framework import mixins
 
+# using viewSets & Routers
+from rest_framework import viewsets
+
 
 # Create your views here.
+
+
+#------ using viewSets & Routers -------
+
+
+
+# methode 1 -> viewsets.ViewSet
+
+# class PostViewSets(viewsets.ViewSet):
+#     def list(self, request):
+#         posts = Post.objects.all() #querySet
+#         serialazer = PostSerializer(posts, many=True)
+#         return Response(serialazer.data)
+#     def create(self, request):
+#         serialazer = PostSerializer(data = request.data)
+        
+#         if serialazer.is_valid():
+#             serialazer.save()
+#             return Response(serialazer.data, status=status.HTTP_201_CREATED)
+#         return Response(serialazer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# methode 2 -> viewsets.GenericViewSet and mixins
+
+class   PostViewSets(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin,
+                     mixins.DestroyModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin):
+    serializer_class = PostSerializer
+    queryset = Post.objects.all()
+
+
+
 
 
 #------ using mixins and generic class-based views -------
 
 
-class   genericApiView(generics.GenericAPIView,  mixins.ListModelMixin, mixins.CreateModelMixin,
-                       mixins.UpdateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin):
-    serializer_class = PostSerializer
-    queryset = Post.objects.all()
-    lookup_field = 'id'
+# class   genericApiView(generics.GenericAPIView,  mixins.ListModelMixin, mixins.CreateModelMixin,
+#                        mixins.UpdateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin):
+#     serializer_class = PostSerializer
+#     queryset = Post.objects.all()
+#     lookup_field = 'id'
 
-    # def get(self, request, id):
-    def get(self, request, id=None):
-        if id:
-            return self.retrieve(request)
-        else:
-            return self.list(request)
-        
-        # if id is None:
-        #     # List all posts if no `id` is provided
-        #     return self.list(request)
-        # else:
-        #     # Retrieve a specific post if `id` is provided
-        #     return self.retrieve(request, id=id)
+#     # def get(self, request, id):
+#     def get(self, request, id=None):
+#         if id:
+#             return self.retrieve(request)
+#         else:
+#             return self.list(request)
+
+#     def post(self, request):
+#         return self.create(request)
     
-    def post(self, request):
-        return self.create(request)
+#     def put(self, request, id=None):
+#         return self.update(request. id)
     
-    def put(self, request, id=None):
-        return self.update(request. id)
-    
-    def delete(self, request, id=None):
-        return self.destroy(request, id)
+#     def delete(self, request, id=None):
+#         return self.destroy(request, id)
 
 
 
