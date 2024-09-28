@@ -19,9 +19,9 @@ from rest_framework import viewsets
 
 # Create your views here.
 
-
+#------------------------------------------------------------------------
 #------ using viewSets & Routers -------
-
+#------------------------------------------------------------------------
 
 
 # methode 1 -> viewsets.ViewSet
@@ -42,17 +42,17 @@ from rest_framework import viewsets
 
 # methode 2 -> viewsets.GenericViewSet and mixins
 
-class   PostViewSets(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin,
-                     mixins.DestroyModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin):
-    serializer_class = PostSerializer
-    queryset = Post.objects.all()
+# class   PostViewSets(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin,
+#                      mixins.DestroyModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin):
+#     serializer_class = PostSerializer
+#     queryset = Post.objects.all()
 
 
 
 
-
+#------------------------------------------------------------------------
 #------ using mixins and generic class-based views -------
-
+#------------------------------------------------------------------------
 
 # class   genericApiView(generics.GenericAPIView,  mixins.ListModelMixin, mixins.CreateModelMixin,
 #                        mixins.UpdateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin):
@@ -78,57 +78,59 @@ class   PostViewSets(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Crea
 
 
 
-
+#------------------------------------------------------------------------
 #------ APIView class for working with class-based views -------
+#------------------------------------------------------------------------
 
 
-# class   PostsAPIViews(APIView):
-#     def get(self, request):
-#         posts = Post.objects.all() #querySet
-#         serialazer = PostSerializer(posts, many=True)
-#         return Response(serialazer.data)
+class   PostsAPIViews(APIView):
+    def get(self, request):
+        posts = Post.objects.all() #querySet
+        serialazer = PostSerializer(posts, many=True)
+        return Response(serialazer.data)
 
-#     def post(self, request):
-#         serialazer = PostSerializer(data = request.data)
+    def post(self, request):
+        serialazer = PostSerializer(data = request.data)
         
-#         if serialazer.is_valid():
-#             serialazer.save()
-#             return Response(serialazer.data, status=status.HTTP_201_CREATED)
-#         return Response(serialazer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if serialazer.is_valid():
+            serialazer.save()
+            return Response(serialazer.data, status=status.HTTP_201_CREATED)
+        return Response(serialazer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
-# class posts_detailsAPIViews(APIView):
-#     def get_object(self, pk):
-#         try:
-#             return Post.objects.get(pk=pk)
-#         except Post.DoesNotExist:
-#             raise Http404
+class posts_detailsAPIViews(APIView):
+    def get_object(self, pk):
+        try:
+            return Post.objects.get(pk=pk)
+        except Post.DoesNotExist:
+            raise Http404
         
-#     def get(self, request, pk):
-#         post = self.get_object(pk)
-#         serializer = PostSerializer(post)
-#         return Response(serializer.data)
+    def get(self, request, pk):
+        post = self.get_object(pk)
+        serializer = PostSerializer(post)
+        return Response(serializer.data)
 
-#     def put(self, request, pk):
-#         post = self.get_object(pk)
-#         serializer = PostSerializer(post, data=request.data)
+    def put(self, request, pk):
+        post = self.get_object(pk)
+        serializer = PostSerializer(post, data=request.data)
 
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-#     def delete(self, request, pk):
-#         post = self.get_object(pk)
-#         post.delete()
-#         return Response(status=status.HTTP_204_NO_CONTENT)
+    def delete(self, request, pk):
+        post = self.get_object(pk)
+        post.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
         
 
 
 
-
+#------------------------------------------------------------------------
 #------ @api_view decorator for working with function based views -------
+#------------------------------------------------------------------------
 
 
 # @api_view(['GET', 'POST'])
@@ -156,6 +158,7 @@ class   PostViewSets(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Crea
 #         post = Post.objects.get(pk=pk)  # instanse
 #     except post.DoesNotExist:
 #         return Response(status=status.HTTP_404_NOT_FOUND)
+#
 #     if request.method == 'GET':
 #         serializer = PostSerializer(post)
 #         return Response(serializer.data)
